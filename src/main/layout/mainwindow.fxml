@@ -1,0 +1,62 @@
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.GridPane?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+
+<BorderPane fx:controller="main.MainWindowController"
+          xmlns:fx="http://javafx.com/fxml"
+          stylesheets="@./mainwindow.css"
+    >
+
+    <top>
+        <HBox
+            fx:id="hbox_top"
+            >
+            <Button
+                fx:id="button_new"
+                text="New"
+                />
+            <Button
+                fx:id="button_save"
+                text="Save"
+                />
+            <Button
+                fx:id="button_save_as"
+                text="Save As"
+                />
+            <Button
+                fx:id="button_open"
+                text="Open"
+                />
+        </HBox>
+    </top>
+
+    <center>
+       <TextArea
+            fx:id="mainTextArea"
+           />
+    </center>
+
+    <left>
+        <VBox
+            fx:id="vbox_left"
+            >
+
+            <Button
+                fx:id="button_host"
+                text="Host"
+                />
+
+            <Button
+                fx:id="button_join"
+                text="Join"
+                />
+        </VBox>
+    </left>
+
+</BorderPane>
