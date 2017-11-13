@@ -4,6 +4,7 @@ import main.DataPacket;
 import main.util.FileIO;
 import main.util.ByteUtils;
 import main.util.FilePathUtils;
+import main.util.StringChange;
 
 import java.io.*;
 import java.net.Socket;
@@ -19,14 +20,22 @@ import java.util.List;
  * @author Benjamin
  */
 public class ClientConnection implements Runnable{
+    public interface ClientConnectionListener{
+        void onStringChangePacket(StringChange stringChange);
+    }
+
     private Socket socket;
     private DataInputStream inStream;
     private DataOutputStream outStream;
+    private ClientConnectionListener listener = null;
 
     public ClientConnection(Socket socket){
         this.socket = socket;
     }
 
+    public void registerListener(ClientConnectionListener listener){
+        this.listener = listener;
+    }
 
     /**
      * Kill the connection to this client instantly (without waiting for blocking calls to finish).
@@ -87,84 +96,18 @@ public class ClientConnection implements Runnable{
                      * Write it to a file
                      */
                     switch(dataPacket.getType()){
-                        case DataPacket.TYPE_FILE:
-                            System.out.println("Data Packet is a file");
-                            //Convert given filepath to Cloud10 filepath
-                            String filepath = dataPacket.getFilepath();
-                            System.out.println("Original filename: " + filepath);
-                            Path p = Paths.get(filepath);
-                            String localFilePath = FilePathUtils.getCloud10Dir() + FilePathUtils.getFilePathSeparator() + p.getFileName().toString();
-                            System.out.println("Local filepath: " + filepath);
-
-                            FilePathUtils.createCloud10DirIfNotCreated();
-                            FileIO.writeFile(localFilePath, dataPacket.getData());
-                            System.out.println("File written");
+                        case DataPacket.TYPE_CHAT:
+                            try {
+                                StringChange stringChange = (StringChange) ByteUtils.fromBytes(dataPacket.getData());
+                                System.out.println(stringChange.toStringShort());
+                                if(this.listener != null){
+                                    listener.onStringChangePacket(stringChange);
+                                }
+                            }catch(Exception e){
+                                e.printStackTrace();
+                            }
 
                             break;
-
-                        case DataPacket.TYPE_DIR_REQUEST:
-                            System.out.println("Data Packet is a Directory Request");
-                            List<String> filepaths = new ArrayList();
-                            /**
-                             *     ,--._
-                                    `.   `.                      ,-.
-                                      `.`. `.                  ,'   )
-                                        \`:  \               ,'    /
-                                         \`:  ),.         ,-' ,   /
-                                         ( :  |:::.    ,-' ,'   ,'
-                                         `.;: |::::  ,' ,:'  ,-'
-                                         ,^-. `,--.-/ ,'  _,'
-                                        (__        ^ ( _,'
-                                      __((o\   __   ,-'
-                                    ,',-.     ((o)  /
-                                  ,','   `.    `-- (
-                                  |'      ,`        \
-                                  |     ,:' `        |
-                                 (  `--      :-.     |
-                                 `,.__       ,-,'   ;
-                                 (_/  `,__,-' /   ,'
-                                 |\`--|_/,' ,' _,'
-                                 \_^--^,',-' -'(
-                                 (_`--','       `-.
-                                  ;;;;'       ::::.`------.
-                                    ,::       `::::  `:.   `.
-                                   ,:::`       :::::   `::.  \
-                                  ;:::::       `::::     `::  \
-                                  |:::::        `::'      `:   ;
-                                  |:::::.        ;'        ;   |
-                                  |:::::;                   )  |
-                                  |::::::        ,   `::'   |  \
-                                  |::::::.       ;.   :'    ;   ::.
-                                  |::::,::        :.  :   ,;:   |::
-                                  ;:::;`"::     ,:::  |,-' `:   |::,
-                                  /;::|    `--;""';'  |     :. (`";'
-                                  \   ;           ;   |     ::  `,
-                                   ;  |           |  ,:;     |  :
-                                   |  ;           |  |:;     |  |
-                                   |  |           |  |:      |  |
-                                   |  |           |  ;:      |  |
-                                  /___|          /____|     ,:__|
-                                 /    /  -hrr-   /    |     /    )
-                                 `---'          '----'      `---'
-
-                             ADD CODE TO GET LIST OF FILEPATHS HERE
-                             */
-                            filepaths.add("Filepath1");
-                            filepaths.add("Filepath2");
-                            filepaths.add("Filepath3");
-                            filepaths.add("Filepath4");
-                            filepaths.add("Filepath5");
-                            filepaths.add("Filepath6");
-
-                            byte[] dataBytes = ByteUtils.toBytes(filepaths);
-                            DataPacket response = new DataPacket("Server", "Client", DataPacket.TYPE_DIR_REQUEST, dataBytes);
-                            byte[] resPacketBytes = ByteUtils.toBytesWithLength(response);
-                            outStream.write(resPacketBytes);
-                            outStream.flush();
-
-                            break;
-                    }
-                    if(dataPacket.getType() == DataPacket.TYPE_FILE){
                     }
                 }
                 catch(EOFException eof){ //Thrown when the Client closes its end of the socket

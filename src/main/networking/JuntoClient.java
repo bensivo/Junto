@@ -23,6 +23,9 @@ public class JuntoClient {
 
     private String serverName;
     private int serverPort;
+    private boolean connected = false;
+
+    public boolean isConnected(){return this.connected;}
 
     public JuntoClient(){
         this("", -1);
@@ -45,11 +48,14 @@ public class JuntoClient {
             socket = new Socket(serverName, serverPort);
             System.out.println("Connection established");
             openStreams();
+            connected = true;
         }
         catch(UnknownHostException e) {
+            connected = false;
             System.out.println("Couldn't find server on specified ip: " + e.getMessage());
         }
         catch(IOException ioe) {
+            connected = false;
             System.out.println("IO Error:" + ioe.getMessage());
         }
     }

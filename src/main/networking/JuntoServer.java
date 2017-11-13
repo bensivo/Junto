@@ -8,12 +8,18 @@ package main.networking;
 public class JuntoServer {
     private int port;
     private ClientPooler clientPooler;
+    private ClientConnection.ClientConnectionListener listener = null;
 
     public JuntoServer(){
-        this(5001);
+        this(5001, null);
     }
 
-    public JuntoServer(int port) {
+    public JuntoServer(ClientConnection.ClientConnectionListener listener){
+        this(5001, listener);
+    }
+
+    public JuntoServer(int port, ClientConnection.ClientConnectionListener listener) {
+        this.listener = listener;
         this.port = port;
     }
 
@@ -28,11 +34,20 @@ public class JuntoServer {
 
     public void start(){
         clientPooler = new ClientPooler(this.port);
+        if(this.listener != null){
+            clientPooler.registerListener(this.listener);
+        }
+
         Thread serverThread = new Thread(clientPooler);
         serverThread.start();
     }
 
     public void stop(){
         clientPooler.instantStop();
+    }
+
+    public void registerListener(ClientConnection.ClientConnectionListener listener){
+        this.listener = listener;
+        clientPooler.registerListener(listener);
     }
 }

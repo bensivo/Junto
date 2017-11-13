@@ -43,6 +43,6 @@ public class ServerMain{
 
         //Start the server
         port = Integer.parseInt(args[0]);
-        server = new JuntoServer(port);
+        server = new JuntoServer(port, null);
     }
 }

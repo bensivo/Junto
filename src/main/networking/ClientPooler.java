@@ -19,6 +19,7 @@ public class ClientPooler implements Runnable{
     private int port;
     private ServerSocket server;
     private ArrayList<ClientConnection> clientConnections = new ArrayList<>();
+    private ClientConnection.ClientConnectionListener listener = null;
 
     public ClientPooler(int port){
         this.port = port;
@@ -28,6 +29,13 @@ public class ClientPooler implements Runnable{
         return clientConnections;
     }
 
+
+    public void registerListener(ClientConnection.ClientConnectionListener listener){
+        this.listener = listener;
+        for(ClientConnection connection: this.clientConnections){
+            connection.registerListener(listener);
+        }
+    }
 
     /**
      * Stop both the listening server socket, and all client connections
@@ -65,6 +73,9 @@ public class ClientPooler implements Runnable{
 
                 //Create a new client connection with this socket, and create a thread to run it on
                 ClientConnection connection = new ClientConnection(socket);
+                if(this.listener != null){
+                     connection.registerListener(this.listener);
+                }
                 Thread thread = new Thread(connection);
                 clientConnections.add(connection);
                 thread.start();

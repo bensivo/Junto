@@ -1,6 +1,8 @@
 package main.util;
 
-public class StringChange {
+import java.io.Serializable;
+
+public class StringChange implements Serializable {
     public static int INDEX_NOT_FOUND = Integer.MIN_VALUE;
 
     String originalString, newString;
@@ -30,7 +32,7 @@ public class StringChange {
         }
         if(revised.equals("")){
             this.index = 0;
-            this.del = revised;
+            this.del = original;
             this.add = "";
             return;
         }
@@ -80,6 +82,18 @@ public class StringChange {
             str += String.format(" :: at index %d DEL '%s' ADD '%s'", this.index, this.del, this.add);
         }
         return str;
+    }
+
+    public String toStringShort(){
+        String str = "";
+        if(this.index == INDEX_NOT_FOUND){
+            str+= "NO CHANGE";
+        }
+        else{
+            str += String.format("At index %d DEL '%s' ADD '%s'", this.index, this.del, this.add);
+        }
+        return str;
+
     }
 
     public String getOriginalString() {

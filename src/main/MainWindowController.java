@@ -7,11 +7,13 @@ import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import main.networking.ClientConnection;
 import main.networking.JuntoClient;
 import main.networking.JuntoServer;
+import main.util.ByteUtils;
 import main.util.StringChange;
 
-public class MainWindowController {
+public class MainWindowController implements ClientConnection.ClientConnectionListener{
 
     JuntoServer server;
     JuntoClient client;
@@ -28,14 +30,23 @@ public class MainWindowController {
     public void initialize(){
         initUI();
 
-        server = new JuntoServer();
+        server = new JuntoServer(this);
         client = new JuntoClient();
 
         mainTextArea.textProperty().addListener(
             (ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
                 StringChange stringChange = new StringChange(oldValue, newValue);
-                System.out.println(stringChange.toString());
-
+                System.out.println(stringChange.toStringShort());
+                try{
+                    if(client.isConnected()){
+                        byte[] bytes = ByteUtils.toBytes(stringChange);
+                        DataPacket packet = new DataPacket("client", "server", DataPacket.TYPE_CHAT, bytes);
+                        client.sendPacket(packet);
+                        System.out.println("String change Packet sent");
+                    }
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
             }
         );
 
@@ -81,5 +92,17 @@ public class MainWindowController {
     private void initUI(){
         button_host.setMaxWidth(Double.MAX_VALUE);
         button_join.setMaxWidth(Double.MAX_VALUE);
+    }
+
+    @Override
+    public void onStringChangePacket(StringChange stringChange) {
+        String s = mainTextArea.getText();
+        StringBuilder builder = new StringBuilder(s);
+        builder.delete(stringChange.getIndex(), stringChange.getIndex() + stringChange.getDel().length());
+        builder.insert(stringChange.getIndex(), stringChange.getAdd());
+
+        String newString = builder.toString();
+        mainTextArea.setText(newString);
+
     }
 }
