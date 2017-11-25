@@ -10,10 +10,10 @@ public class FilePathUtils {
 
     public static String getCloud10Dir(){
         if(isWindows()){
-            return getHomeDir() + "\\Cloud10";
+            return getHomeDir() + "\\Junto";
         }
         else{
-            return getHomeDir() + "/Cloud10";
+            return getHomeDir() + "/Junto";
         }
     }
 

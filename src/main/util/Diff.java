@@ -2,14 +2,17 @@ package main.util;
 
 import java.io.Serializable;
 
-public class StringChange implements Serializable {
+public class Diff implements Serializable {
     public static int INDEX_NOT_FOUND = Integer.MIN_VALUE;
 
     String originalString, newString;
     int index;
     String del, add;
 
-    public StringChange(String original, String revised){
+    String sourceId; //A value used to identify the source of the diff. Can be a filename or a uuid.
+
+    public Diff(String srcId, String original, String revised){
+        this.sourceId = srcId;
         this.originalString = original;
         this.newString = revised;
         this.del = "";
@@ -114,5 +117,9 @@ public class StringChange implements Serializable {
 
     public int getIndex(){
         return index;
+    }
+
+    public String getSourceId(){
+        return this.sourceId;
     }
 }

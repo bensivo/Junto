@@ -1,15 +1,15 @@
 package test;
 
-import main.util.StringChange;
+import main.util.Diff;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class StringChangeTests {
+class DiffTests {
 
     @Test
     public void stringChangeDeleteOnlyCharacter(){
-        StringChange change = new StringChange("a", "");
+        Diff change = new Diff("srcID","a", "");
         assertTrue(change.getIndex() == 0);
         assertTrue(change.getDel().equals("a"));
         assertTrue(change.getAdd().equals(""));
@@ -17,7 +17,7 @@ class StringChangeTests {
 
     @Test
     public void stringChangeDelAndAppend() {
-        StringChange change = new StringChange("abcdef", "abcghi");
+        Diff change = new Diff("srcID","abcdef", "abcghi");
         assertTrue(change.getIndex() == 3);
         assertTrue(change.getDel().equals("def"));
         assertTrue(change.getAdd().equals("ghi"));
@@ -25,7 +25,7 @@ class StringChangeTests {
 
     @Test
     public void stringChangeAppend() {
-        StringChange change = new StringChange("abc", "abcdef");
+        Diff change = new Diff("srcID","abc", "abcdef");
         assertTrue(change.getIndex() == 3);
         assertTrue(change.getDel().equals(""));
         assertTrue(change.getAdd().equals("def"));
@@ -33,7 +33,7 @@ class StringChangeTests {
 
     @Test
     public void stringChangeDeleteFromEnd(){
-        StringChange change = new StringChange("abcdef", "abcde");
+        Diff change = new Diff("srcID","abcdef", "abcde");
         assertTrue(change.getIndex() == 5);
         assertTrue(change.getDel().equals("f"));
         assertTrue(change.getAdd().equals(""));
@@ -41,7 +41,7 @@ class StringChangeTests {
 
     @Test
     public void stringChangeDeleteFromBeg(){
-        StringChange change = new StringChange("abcde", "bcde");
+        Diff change = new Diff("srcID","abcde", "bcde");
         assertTrue(change.getIndex() == 0);
         assertTrue(change.getDel().equals("a"));
         assertTrue(change.getAdd().equals(""));
@@ -49,7 +49,7 @@ class StringChangeTests {
 
     @Test
     public void stringChangeDeleteRepeating(){
-        StringChange change = new StringChange("abbbbc", "abbbc");
+        Diff change = new Diff("srcID","abbbbc", "abbbc");
         assertTrue(change.getIndex() <= 4 && change.getIndex() >= 1);
         assertTrue(change.getDel().equals("b"));
         assertTrue(change.getAdd().equals(""));

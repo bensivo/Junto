@@ -1,20 +1,20 @@
 package main;
 
-import main.util.StringChange;
+import main.util.Diff;
 
 public class TestMain {
     public static void main(String[] args) {
-        StringChange change1 = new StringChange("abcdef", "abcghi");
+        Diff change1 = new Diff("srcID","abcdef", "abcghi");
         System.out.println(change1.toString());
-        StringChange change2 = new StringChange("abbbbc", "abbbc");
+        Diff change2 = new Diff("srcID","abbbbc", "abbbc");
         System.out.println(change2.toString());
-        StringChange change3 = new StringChange("abc", "ab");
+        Diff change3 = new Diff("srcID","abc", "ab");
         System.out.println(change3.toString());
-        StringChange change4 = new StringChange("abc", "abcdef");
+        Diff change4 = new Diff("srcID","abc", "abcdef");
         System.out.println(change4.toString());
-        StringChange change5 = new StringChange("", "abcdef");
+        Diff change5 = new Diff("srcID","", "abcdef");
         System.out.println(change5.toString());
-        StringChange change6 = new StringChange("abcdef", "");
+        Diff change6 = new Diff("srcID","abcdef", "");
         System.out.println(change6.toString());
     }
 

@@ -15,7 +15,7 @@ package main;
 import java.io.Serializable;
 
 public class DataPacket implements Serializable {
-    public final static int TYPE_CHAT = 1;
+    public final static int TYPE_DIFF = 1;
     public final static int TYPE_FILE = 2;
     public final static int TYPE_AUTH = 3;
     public final static int TYPE_DIR_REQUEST = 4;

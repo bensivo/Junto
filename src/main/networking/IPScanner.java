@@ -20,7 +20,7 @@ public class IPScanner {
         int port;
 
         if (args.length != 1) {
-            System.out.println("Usage: java JuntoServer port");
+            System.out.println("Usage: java Server port");
             System.exit(1);
         }
         port = Integer.parseInt(args[0]);

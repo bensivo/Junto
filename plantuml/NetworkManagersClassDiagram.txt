@@ -1,0 +1,60 @@
+@startuml
+
+together {
+    class MainWindowController <<JavaFX Class>>{
+        +UI
+    }
+    class JuntoConnection{
+        +switchNetworkManager()
+    }
+}
+
+interface NetworkManager{
+    +start()
+    +stop()
+    +handleLocalDiff(Diff d)
+    +handleRemoteDiff(Diff d)
+}
+
+together {
+    class Server
+    class Client
+}
+
+together {
+    interface ConnectionPoolerCallbacks{
+        +onNewSocketConnected(Socket s)
+    }
+    class ConnectionPooler{
+        +registerListener(ConnectionPoolerCallbacks cpc)
+    }
+}
+
+
+together {
+    class DataPacketReceiver {
+        +attach(DataPacketReceiverListener)
+        +socket
+    }
+    interface DataPacketReceiverListener{
+        +onDataPacketReceied(DataPacket)
+    }
+
+}
+
+MainWindowController "1" *-- "1" JuntoConnection: contains
+JuntoConnection *-- NetworkManager
+
+Server --|> NetworkManager
+Server --|> ConnectionPoolerCallbacks
+Server *-- ConnectionPooler
+ConnectionPooler *-- ConnectionPoolerCallbacks
+ConnectionPooler "1" *-- "*" DataPacketReceiver
+Server --|> DataPacketReceiverListener
+
+Client --|> NetworkManager
+Client --|> DataPacketReceiverListener
+Client *-- DataPacketReceiver
+DataPacketReceiver *-- DataPacketReceiverListener
+
+@enduml

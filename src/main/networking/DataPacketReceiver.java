@@ -1,58 +1,39 @@
 package main.networking;
 
 import main.DataPacket;
-import main.util.FileIO;
+import main.networking.interfaces.DataPacketReceiverListener;
 import main.util.ByteUtils;
-import main.util.FilePathUtils;
-import main.util.StringChange;
 
 import java.io.*;
 import java.net.Socket;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
- * Manages a single connection to a client. Upon creation, starts a socket connection to the client specified
- * and begins listening for messages/packets.
+ * Given a socket (already opened), begins listening for DataPackets coming through the socket, using
+ * The ConnectionLIstenerInterface to notify observers
  *
  * @author Benjamin
  */
-public class ClientConnection implements Runnable{
-    public interface ClientConnectionListener{
-        void onStringChangePacket(StringChange stringChange);
-    }
+public class DataPacketReceiver implements Runnable{
 
     private Socket socket;
     private DataInputStream inStream;
-    private DataOutputStream outStream;
-    private ClientConnectionListener listener = null;
+    DataPacketReceiverListener listener = null;
 
-    public ClientConnection(Socket socket){
+    public DataPacketReceiver(Socket socket) {
         this.socket = socket;
+        this.listener = null;
     }
 
-    public void registerListener(ClientConnectionListener listener){
+    public DataPacketReceiver(Socket socket, DataPacketReceiverListener receiverListener){
+        this.socket = socket;
+        this.listener = receiverListener;
+    }
+
+
+    public void attach(DataPacketReceiverListener listener){
         this.listener = listener;
     }
 
-    /**
-     * Kill the connection to this client instantly (without waiting for blocking calls to finish).
-     * Note that this will often throw a SocketException (which is totally safe)
-     */
-    public void instantStop(){
-        try{
-            socket.close();
-            inStream.close();
-            outStream.close();
-            Thread.currentThread().interrupt();
-        }
-        catch(IOException ieo){
-            ieo.printStackTrace();
-        }
-        Thread.currentThread().interrupt();
-    }
 
     /**
      * Called when the thread starts
@@ -92,25 +73,11 @@ public class ClientConnection implements Runnable{
                     inStream.read(dataPacketBytes,0,(int)length);
                     DataPacket dataPacket = (DataPacket)ByteUtils.fromBytes(dataPacketBytes);
 
-                    /**
-                     * Write it to a file
-                     */
-                    switch(dataPacket.getType()){
-                        case DataPacket.TYPE_CHAT:
-                            try {
-                                StringChange stringChange = (StringChange) ByteUtils.fromBytes(dataPacket.getData());
-                                System.out.println(stringChange.toStringShort());
-                                if(this.listener != null){
-                                    listener.onStringChangePacket(stringChange);
-                                }
-                            }catch(Exception e){
-                                e.printStackTrace();
-                            }
+                    listener.onDataPacketReceived(dataPacket, this);
 
-                            break;
-                    }
                 }
                 catch(EOFException eof){ //Thrown when the Client closes its end of the socket
+                    eof.printStackTrace();
                     System.out.println("Socket End of File");
                     this.instantStop();
                 }
@@ -133,9 +100,24 @@ public class ClientConnection implements Runnable{
         }
     }
 
+    /**
+     * Kill the connection to this client instantly (without waiting for blocking calls to finish).
+     * Note that this will often throw a SocketException on any thread reading from the socket
+     */
+    public void instantStop(){
+        try{
+            socket.close();
+            inStream.close();
+            Thread.currentThread().interrupt();
+        }
+        catch(IOException ieo){
+            ieo.printStackTrace();
+        }
+        Thread.currentThread().interrupt();
+    }
+
     private void open() throws IOException{
         inStream = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-        outStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
     }
 
     private void close() throws IOException {
@@ -145,5 +127,9 @@ public class ClientConnection implements Runnable{
         if(inStream != null){
             inStream.close();
         }
+    }
+
+    public Socket getSocket(){
+        return this.socket;
     }
 }
