@@ -1,35 +1,30 @@
 package main;
 
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import main.gui.EditFileTab;
+import main.gui.TabController;
 import main.networking.*;
 import main.networking.interfaces.NetworkManagerListener;
 import main.networking.interfaces.NetworkManager;
 import main.util.Diff;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class MainWindowController implements NetworkManagerListener {
 
     JuntoConnection connection;
     boolean detectChange = true;
 
-    @FXML
-    private TabPane tabPane;
-
+    @FXML private TabPane tabPane;
     @FXML private Button button_save, button_new, button_save_as, button_open, button_host, button_join;
-
     @FXML private VBox vbox_left;
     @FXML private HBox hbox_top;
+
+    private TabController tabController;
 
     @FXML
     public void initialize(){
@@ -39,10 +34,8 @@ public class MainWindowController implements NetworkManagerListener {
         connection = new JuntoConnection();
         connection.attach(this);
 
-        //Create file tabs, and add one blank tab to the ui
-        EditFileTab initialTab = new EditFileTab("Untitled1", connection);
-        tabPane.getTabs().add(initialTab);
-
+        tabController = new TabController(tabPane);
+        tabController.newTab();
 
         button_host.setOnMouseClicked(
             (MouseEvent e)->{
@@ -73,7 +66,7 @@ public class MainWindowController implements NetworkManagerListener {
         button_new.setOnMouseClicked(
                 (MouseEvent e)->{
                     System.out.println("new button clicked");
-                    tabPane.getTabs().add(new EditFileTab("Untitled" + tabPane.getTabs().size(), connection));
+                    tabController.newTab();
                 }
         );
         button_save_as.setOnMouseClicked(
@@ -94,7 +87,7 @@ public class MainWindowController implements NetworkManagerListener {
         for(Tab tab: tabPane.getTabs()){
             if(tab instanceof EditFileTab){
                 EditFileTab editFileTab = (EditFileTab)tab;
-                if(editFileTab.getFileName().equals(diff.getSourceId())){
+                if(editFileTab.getFilepath().equals(diff.getSourceId())){
                     editFileTab.applyDiff(diff);
                 }
             }

@@ -2,6 +2,18 @@ package main.util;
 
 import java.io.Serializable;
 
+/**
+ * Represents a single change to a String, as possible by a mouse and keyboard.
+ * Can be a simple insertion, deletion, or a mix of both (at the same index).
+ *
+ * The diff is defined by:
+ *  - Original String
+ *  - Start index
+ *  - Deleted text
+ *  - Added text
+ *
+ * To apply a diff, get the original string, delete the del text at the index given, then insert the added text
+ */
 public class Diff implements Serializable {
     public static int INDEX_NOT_FOUND = Integer.MIN_VALUE;
 
@@ -75,6 +87,10 @@ public class Diff implements Serializable {
         this.index = diffBeg;
     }
 
+    /**
+     * For logging
+     * @return
+     */
     public String toString(){
         String str = "";
         str += String.format("'%s' to '%s'", originalString, newString);
@@ -87,6 +103,10 @@ public class Diff implements Serializable {
         return str;
     }
 
+    /**
+     * For logging
+     * @return
+     */
     public String toStringShort(){
         String str = "";
         if(this.index == INDEX_NOT_FOUND){

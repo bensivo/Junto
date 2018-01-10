@@ -1,7 +1,6 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
 <BorderPane fx:controller="main.MainWindowController"
           xmlns:fx="http://javafx.com/fxml"
           stylesheets="@./mainwindow.css" >

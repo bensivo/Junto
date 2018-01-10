@@ -1,0 +1,7 @@
+UML diagrams to write:
+
+- Sequence diagram for text being typed on teh server, and sent to a a client
+
+- Sequence diagram for text being typed on a client, and being sent to a server
+
+- Sequence diagram for text being sent to a server, and routed to another client

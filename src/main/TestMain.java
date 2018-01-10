@@ -17,6 +17,4 @@ public class TestMain {
         Diff change6 = new Diff("srcID","abcdef", "");
         System.out.println(change6.toString());
     }
-
-
 }
