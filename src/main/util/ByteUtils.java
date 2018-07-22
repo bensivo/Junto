@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 import java.util.Arrays;
 
 /**
- * Utility functions for converting object into byte arrays, and back again.
+ * Utility functions for converting objects into byte arrays, and back again.
  * Also contains functions to assist in socket communication
  */
 public class ByteUtils {

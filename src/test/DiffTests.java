@@ -1,6 +1,6 @@
 package test;
 
-import main.util.Diff;
+import main.optransform.Diff;
 
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertTrue;

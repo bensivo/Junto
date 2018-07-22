@@ -1,10 +1,10 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-
 <BorderPane fx:controller="main.MainWindowController"
           xmlns:fx="http://javafx.com/fxml"
-          stylesheets="@./mainwindow.css" >
+          stylesheets="@./mainwindow.css"
+          fx:id="border_pane">
 
     <top>
         <HBox

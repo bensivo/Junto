@@ -1,4 +1,4 @@
-package main;
+package main.networking;
 /**
  * Abstraction for sending data through a socket connection.
  * Usage as follows:

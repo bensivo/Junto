@@ -1,6 +1,5 @@
 package main.networking;
 
-import main.DataPacket;
 import main.networking.interfaces.DataPacketReceiverListener;
 import main.util.ByteUtils;
 

@@ -1,0 +1,26 @@
+FEATURES TO IMPLEMENT:
+
+BASIC FEATURES:
+    - open a file
+    - open multiple files
+    - save a file
+        - New File
+        - Existing file (without a dialog if the filename is already known)
+    - saveAll
+
+CODING FEATURES:
+    - line numbers
+    - syntax highlighting
+    - autocompletion
+
+CUSTOMIZATION FEATURES;
+    - Change color scheme of UI
+    - Change font and font size
+
+FEATURES IN CONSIDERATION:
+    - Real time Chat
+    - Ping or Highlight certain lines for others to see ("and click on to get to automatically?")
+    - Bookmarks
+    - Local tabs that aren't shared with anyone
+    - shortcuts (Ex. typing "sout" + ctrl^Space would extend to System.out.println();)
+

@@ -1,7 +1,10 @@
 package main;
 
-import main.util.Diff;
+import main.optransform.Diff;
 
+/**
+ * A psvm that I can use to test little functions
+ */
 public class TestMain {
     public static void main(String[] args) {
         Diff change1 = new Diff("srcID","abcdef", "abcghi");

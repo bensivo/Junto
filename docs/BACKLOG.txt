@@ -1,0 +1,7 @@
+BACKLOG
+
+BIG FEATURES:
+    - "As a technical user, I want to run a UI-free server that handles OT for multiple clients."
+        - Functional Requirements:
+            - UI code and OT code must be sufficiently decoupled
+            - UI code and Netowkring code must be sufficiently decoupled

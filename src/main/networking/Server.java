@@ -1,23 +1,19 @@
 package main.networking;
 
-import main.DataPacket;
 import main.networking.interfaces.ConnectionPoolerListener;
 import main.networking.interfaces.DataPacketReceiverListener;
 import main.networking.interfaces.NetworkManager;
 import main.networking.interfaces.NetworkManagerListener;
 import main.util.ByteUtils;
-import main.util.Diff;
+import main.optransform.Diff;
 import main.util.Logger;
 
-import javax.sound.midi.Receiver;
 import java.io.BufferedOutputStream;
 import java.io.DataOutputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * Used to listen on a specific port for Junto Client applications to connect to.

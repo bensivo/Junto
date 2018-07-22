@@ -3,7 +3,8 @@
 
 <BorderPane fx:controller="main.MainWindowController"
           xmlns:fx="http://javafx.com/fxml"
-          stylesheets="@./mainwindow.css" >
+          stylesheets="@./mainwindow.css"
+          fx:id="border_pane">
 
     <top>
         <HBox

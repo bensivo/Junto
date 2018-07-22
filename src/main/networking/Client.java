@@ -1,12 +1,11 @@
 package main.networking;
 
 import javafx.scene.control.Alert;
-import main.DataPacket;
 import main.networking.interfaces.DataPacketReceiverListener;
 import main.networking.interfaces.NetworkManager;
 import main.networking.interfaces.NetworkManagerListener;
 import main.util.ByteUtils;
-import main.util.Diff;
+import main.optransform.Diff;
 import main.util.Logger;
 
 import java.io.*;

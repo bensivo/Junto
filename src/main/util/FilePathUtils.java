@@ -2,6 +2,9 @@ package main.util;
 
 import java.io.File;
 
+/**
+ * Static util classes for resolving and generating filepaths across multiple platforms.
+ */
 public class FilePathUtils {
 
     public static String getHomeDir(){

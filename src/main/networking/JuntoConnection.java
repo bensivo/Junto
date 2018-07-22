@@ -2,11 +2,9 @@ package main.networking;
 
 import main.networking.interfaces.NetworkManagerListener;
 import main.networking.interfaces.NetworkManager;
-import main.util.Diff;
-import main.util.Logger;
+import main.optransform.Diff;
 
 import java.net.Socket;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Collection;
 

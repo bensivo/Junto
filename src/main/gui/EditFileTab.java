@@ -4,7 +4,8 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextArea;
 import main.networking.JuntoConnection;
-import main.util.Diff;
+import main.optransform.Diff;
+import main.util.Logger;
 
 /**
  * Custom Tab that contains a TextArea, and is linked to a specific file.
@@ -26,17 +27,23 @@ public class EditFileTab extends Tab{
 
     public EditFileTab(String title, String filepath, JuntoConnection juntoConnection){
         super(title);
+        this.title = title;
         this.filepath = "";
         this.juntoConnection = juntoConnection;
         this.textArea = new TextArea();
         detectChange = true;
 
+        // Attach a listener for onChange events
         textArea.textProperty().addListener(
             (ObservableValue<? extends String> observable, String oldValue, String newValue) -> {
                 if (detectChange) {
-                    Diff diff = new Diff(filepath, oldValue, newValue);
+                    Logger.logI("EDIT_FILE_TAB", "Change in tab: " + title);
+                    Diff diff = new Diff(title, oldValue, newValue);
                     if(juntoConnection!=null){
                         juntoConnection.handleLocalDiff(diff);
+                    }
+                    else{
+                        Logger.logE("EDIT_FILE_TAB", "Change not handled because juntoConnection is null");
                     }
                 }
             });
@@ -68,4 +75,6 @@ public class EditFileTab extends Tab{
     public String getFilepath(){
         return this.filepath;
     }
+
+    public String getTitle(){return this.title;}
 }
