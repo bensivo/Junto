@@ -1,11 +1,13 @@
 package main.networking;
 
 import javafx.scene.control.Alert;
+import main.networking.core.DataPacket;
+import main.networking.core.DataPacketReceiver;
 import main.networking.interfaces.DataPacketReceiverListener;
 import main.networking.interfaces.NetworkManager;
 import main.networking.interfaces.NetworkManagerListener;
+import main.optransform.Operation;
 import main.util.ByteUtils;
-import main.optransform.Diff;
 import main.util.Logger;
 
 import java.io.*;
@@ -93,23 +95,6 @@ public class Client implements NetworkManager, DataPacketReceiverListener {
         }
     }
 
-
-    @Override
-    public void handleLocalDiff(Diff diff){
-        Logger.logI("CLIENT", "Handle Local Diff");
-
-        try{
-            if(streamOut != null){
-                DataPacket dataPacket = new DataPacket("me", "you", DataPacket.TYPE_DIFF, ByteUtils.toBytes(diff));
-                streamOut.write(ByteUtils.toBytesWithLength(dataPacket));
-                streamOut.flush();
-            }
-        }catch (IOException ioe){
-            Logger.logI("CLIENT", "IOError in handlelocaldiff");
-            ioe.printStackTrace();
-        }
-    }
-
     @Override
     public void attachListener(NetworkManagerListener listener){
         this.listener = listener;
@@ -119,17 +104,33 @@ public class Client implements NetworkManager, DataPacketReceiverListener {
     @Override
     public void onDataPacketReceived(DataPacket dataPacket, DataPacketReceiver source) {
         Logger.logI("CLIENT", "New DataPacket received");
+        /**
+         * TODO: Push triage to another class. Use the dispatcher, subscriber pattern
+         */
         switch (dataPacket.getType()){
-            case DataPacket.TYPE_DIFF:
-                Logger.logI("CLIENT", "of type diff");
+            case DataPacket.TYPE_OP:
+                Logger.logI("CLIENT", "of type Operation");
                 if(listener != null){
                     try{
-                        listener.onDiffPacketReceived((Diff) ByteUtils.fromBytes(dataPacket.getData()));
+                        listener.onOperationRecieved((Operation) ByteUtils.fromBytes(dataPacket.getData()));
                     }catch(Exception e){
                         e.printStackTrace();
                     }
                 }
-                break;
+        }
+    }
+
+    @Override
+    public void broadcast(Object obj){
+        try{
+            if(streamOut != null){
+                DataPacket dataPacket = new DataPacket("client", "server", DataPacket.TYPE_OP, ByteUtils.toBytes(obj));
+                streamOut.write(ByteUtils.toBytesWithLength(dataPacket));
+                streamOut.flush();
+            }
+        }catch (IOException ioe){
+            Logger.logI("CLIENT", "IOError in broadcast");
+            ioe.printStackTrace();
         }
     }
 }

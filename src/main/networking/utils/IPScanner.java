@@ -3,7 +3,7 @@
  * First, displays all the IP Addresses in use by the system, and prompts the user to select one
  * Then it searches through all the IP's on the same local network, printing out reachable IP Addresses 
  */
-package main.networking;
+package main.networking.utils;
 
 import java.io.IOException;
 import java.net.InetAddress;

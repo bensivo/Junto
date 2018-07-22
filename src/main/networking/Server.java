@@ -1,11 +1,14 @@
 package main.networking;
 
+import main.networking.core.ConnectionPooler;
+import main.networking.core.DataPacket;
+import main.networking.core.DataPacketReceiver;
 import main.networking.interfaces.ConnectionPoolerListener;
 import main.networking.interfaces.DataPacketReceiverListener;
 import main.networking.interfaces.NetworkManager;
 import main.networking.interfaces.NetworkManagerListener;
+import main.optransform.Operation;
 import main.util.ByteUtils;
-import main.optransform.Diff;
 import main.util.Logger;
 
 import java.io.BufferedOutputStream;
@@ -21,11 +24,12 @@ import java.util.List;
 public class Server implements NetworkManager, ConnectionPoolerListener, DataPacketReceiverListener {
     private static final int PORT = 5001;
 
-    List<DataPacketReceiver> receivers;
+    private ConnectionPooler pooler = null; //Runnable that listens for new socket connections
+    private Thread poolerThread;
+    private List<DataPacketReceiver> receivers;
 
-    ConnectionPooler pooler = null; //Runnable that listens for new socket connections
-    Thread poolerThread;
-    NetworkManagerListener listener = null;
+    private NetworkManagerListener listener = null;
+
 
     public Server(){
         this.receivers = new ArrayList<>();
@@ -46,30 +50,22 @@ public class Server implements NetworkManager, ConnectionPoolerListener, DataPac
         poolerThread.interrupt();
     }
 
-    @Override //NetworkManager
-    public void handleLocalDiff(Diff localDiff) {
-        Logger.logI("SERVER", "handleLocalDiff");
-        for(DataPacketReceiver receiver: receivers){
-            Socket socket = receiver.getSocket();
-            try{
-                /**
-                 * TODO: Let's not create a new outputstream anytime we try to send a datapacket
-                 */
-                OutputStream streamOut = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-                DataPacket dp = new DataPacket("Server", "Client", DataPacket.TYPE_DIFF, ByteUtils.toBytes(localDiff));
-                streamOut.write(ByteUtils.toBytesWithLength(dp));
-                streamOut.flush();
-            }
-            catch(Exception e){
-                Logger.logE("SERVER", "Handle local diff failed on socket: " + socket.getInetAddress().toString());
-                e.printStackTrace();
-            }
-        }
+    /**
+     * Starts the ConnectionPooler thread that begins accepting new socket connections on the given port
+     * @param port The port to listen for incoming connections on
+     */
+    private void listen(int port) {
+        poolerThread = new Thread(pooler);
+        poolerThread.start();
+        System.out.println("Listening on port: " + PORT);
+
     }
 
     /**
-     * Called when a new Junto application initiates a connection, creating a socket.
-     * Creates a thread to listen for dataPackets on teh new socket, and adds the socket to the local list of open sockets
+     * Called when a new client connects to this server's Connection Pooler
+     * Creates a DataPackerReciever(Runnable / Thread) to listen for Packets on that connection, and registers this server as the main callback for that receiver.
+     * @see(onDataPacketRecieved)
+     *
      * @param socket the newly connected socket
      */
     @Override //ConnectionPoolerListener
@@ -82,19 +78,25 @@ public class Server implements NetworkManager, ConnectionPoolerListener, DataPac
     }
 
     /**
-     *
+     * What to do when a datapacket comes in from one of the DataPacketReceiver threads
      * @param dataPacket
      */
     @Override //DataPacketReceiverListener
     public void onDataPacketReceived(DataPacket dataPacket, DataPacketReceiver receiver) {
         Logger.logI("SERVER", "DataPacket received from: " + dataPacket.getSource());
-        if(dataPacket.getType() == DataPacket.TYPE_DIFF){
-            Logger.logI("SERVER", "OF type diff");
+
+        /**
+         * TODO: Push routing to another class (use the emitter and subscriber pattern)
+         */
+        /**
+         * TODO: Implement operation forwarding (forwarding to all other clients)
+         */
+        if(dataPacket.getType() == DataPacket.TYPE_OP){
+            Logger.logI("SERVER", "DP type Operation");
             if(listener != null){
                 try{
-                    Diff diff = (Diff) ByteUtils.fromBytes(dataPacket.getData());
-                    listener.onDiffPacketReceived(diff);
-                    this.routeDiff(diff, receiver);
+                    Operation operation = (Operation) ByteUtils.fromBytes(dataPacket.getData());
+                    listener.onOperationRecieved(operation);
                 }catch(Exception e){
                     e.printStackTrace();
                 }
@@ -102,28 +104,27 @@ public class Server implements NetworkManager, ConnectionPoolerListener, DataPac
         }
     }
 
-    /**
-     * Send the given diff to all sockets, except for the one on the given thread
-     * @param diff The Diff object to route to all the other clients
-     * @param sourceReceiver The Receiver that the diff came from. No diff will be sent to this one
-     */
-    private void routeDiff(Diff diff, DataPacketReceiver sourceReceiver){
+    @Override //Network Manager
+    public void broadcast(Object obj){
+        Logger.logI("SERVER", "broadcasting Object: " + obj.toString());
         for(DataPacketReceiver receiver: receivers){
-            if(receiver != sourceReceiver){
-                Socket socket = receiver.getSocket();
-                try{
-                    OutputStream streamOut = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-                    DataPacket dp = new DataPacket("Server", "Client", DataPacket.TYPE_DIFF, ByteUtils.toBytes(diff));
-                    streamOut.write(ByteUtils.toBytesWithLength(dp));
-                    streamOut.flush();
-                }
-                catch(Exception e){
-                    Logger.logE("SERVER", "Handle local diff failed on socket: " + socket.getInetAddress().toString());
-                    e.printStackTrace();
-                }
-
+            Socket socket = receiver.getSocket();
+            try{
+                /**
+                 * TODO: Let's not create a new outputstream anytime we try to send a datapacket
+                 * Store an output stream for each socket, that we don't close
+                 */
+                OutputStream streamOut = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+                DataPacket dp = new DataPacket("Server", "Client", DataPacket.TYPE_OP, ByteUtils.toBytes(obj));
+                streamOut.write(ByteUtils.toBytesWithLength(dp));
+                streamOut.flush();
+            }
+            catch(Exception e){
+                Logger.logE("SERVER", "Handle local diff failed on socket: " + socket.getInetAddress().toString());
+                e.printStackTrace();
             }
         }
+
     }
 
 
@@ -132,14 +133,4 @@ public class Server implements NetworkManager, ConnectionPoolerListener, DataPac
         this.listener = listener;
     }
 
-    /**
-     * Starts the ConnectionPooler thread that begins accepting new socket connections on the given port
-     * @param port The port to listen for incoming connections on
-     */
-    private void listen(int port) {
-        poolerThread = new Thread(pooler);
-        poolerThread.start();
-        System.out.println("Listening on port: " + PORT);
-
-    }
 }

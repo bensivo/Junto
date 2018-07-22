@@ -1,0 +1,22 @@
+TODO:
+
+For now:
+- Implement a DataPacket router.
+- Get rid of Operation-specific logic in the Network Manager,
+- Write a superclass for Server and Client. Both have the ability to broadcast and receive packets.
+- Figure out why the program doesn't actually stop on close.
+    - Note: it stops correctly if you never opened any connections. It's probably the Connection Pooler Threads and the DataPackerReceiver Threads
+
+Later:
+- Implement An incoming OperationQueue at the Dispatcher level.
+    - Each listener socket will push to the Operation dispatcher
+- Have the dispatcher handle one operation at a time.
+
+
+Things to think about:
+- Do we need to store the state of a file that isn't open?
+    - Store state of unopened files...
+        or
+    - Get Entire file when requested (probably)
+
+- Really only one outgoing OPeration can be sent at a time. We don't really need to worry about outgoing Operation pools, right?

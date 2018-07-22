@@ -4,7 +4,7 @@ import java.util.List;
 import static main.optransform.Operation.TYPE.DELETE;
 import static main.optransform.Operation.TYPE.INSERT;
 
-public class Transformer {
+public class OpTransformer {
 
 
     /**

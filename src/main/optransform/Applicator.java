@@ -1,10 +1,13 @@
 package main.optransform;
 
+import java.util.List;
+
 import static main.optransform.Operation.TYPE.DELETE;
 import static main.optransform.Operation.TYPE.INSERT;
 
 /**
- * Applies Operations to Strings.
+ * Static methods for applying operations to Strings. This assumes that the operations have already been transformed
+ * to exist in the same context as the string.
  */
 public class Applicator {
 
@@ -30,5 +33,20 @@ public class Applicator {
             return builder.toString();
         }
         return source;
+    }
+
+    /**
+     * Apply several operations to a string at once. Does NOT transform pending operations
+     * as new ones are applied.
+     * @param source
+     * @param operations
+     * @return
+     */
+    public static String applyOperations(String source, List<Operation> operations){
+        String result = source;
+        for(Operation op: operations){
+            result = applyOperation(result, op);
+        }
+        return result;
     }
 }

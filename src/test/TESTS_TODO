@@ -1,11 +1,10 @@
 Tests that need to be written:
 
-//JuntoConnection
-- When you Switch JuntoConnection role, the new connection is correct
-- When you start a Juntoconnection as server, the ServerSocket is listening
-- When you start a JuntoConnection client, it connects
-- When you start a Juntoconnection client with no server, it times out
+- Write DataPacket router, and test that it works correctly
+- Test that Generated operations end up at the Network Manager
+- Test that operations coming in to the Network Manager are sent
 
-//Diffs and TextBoxes
-- When you add text to a textbox, an accurate Diff packet is created
-- When you receive a diff packet, The text box is updated correctly
+- Test that operations coming in to the manager are routed correctly.
+
+
+

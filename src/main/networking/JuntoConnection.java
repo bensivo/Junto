@@ -1,8 +1,8 @@
 package main.networking;
 
+import main.networking.core.ConnectionPooler;
 import main.networking.interfaces.NetworkManagerListener;
 import main.networking.interfaces.NetworkManager;
-import main.optransform.Diff;
 
 import java.net.Socket;
 import java.util.ArrayList;
@@ -11,6 +11,8 @@ import java.util.Collection;
 /**
  * Manages a single connection between 2 Junto applications
  * This connection is the entry point of external DataPackets, and the exit point of outgoing DataPackets
+ *
+ * This connection can be either a server or a client.
  */
 public class JuntoConnection {
     private static final int PORT = 5001;
@@ -40,9 +42,13 @@ public class JuntoConnection {
     }
 
 
-    public void handleLocalDiff(Diff diff){
-        networkManager.handleLocalDiff(diff);
+    public void broadcast(Object obj){
+        networkManager.broadcast(obj);
     }
+
+    //public void handleLocalDiff(Diff diff){
+    //    networkManager.handleLocalDiff(diff);
+    //}
 
     public void switchNetworkManager(int type){
         switch(type){

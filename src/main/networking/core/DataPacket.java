@@ -1,4 +1,4 @@
-package main.networking;
+package main.networking.core;
 /**
  * Abstraction for sending data through a socket connection.
  * Usage as follows:
@@ -16,7 +16,7 @@ import java.io.Serializable;
 
 public class DataPacket implements Serializable {
     public final static int TYPE_DIFF = 1;
-    public final static int TYPE_FILE = 2;
+    public final static int TYPE_OP = 2;
     public final static int TYPE_AUTH = 3;
     public final static int TYPE_DIR_REQUEST = 4;
 

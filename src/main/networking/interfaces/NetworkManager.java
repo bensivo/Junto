@@ -1,7 +1,5 @@
 package main.networking.interfaces;
 
-import main.optransform.Diff;
-
 /**
  * A Netowork Manager defines any class that has CONTROL over the main
  * networking operations of the app, such as network capabilities on and off.
@@ -13,6 +11,7 @@ public interface NetworkManager {
 
     void start();
     void stop();
-    void handleLocalDiff(Diff localDiff);
+    void broadcast(Object obj);
+    //void handleLocalDiff(Diff localDiff); //LEGACY, to be deprecated
     void attachListener(NetworkManagerListener l);
 }

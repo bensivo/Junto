@@ -15,7 +15,7 @@ import main.gui.TabController;
 import main.networking.*;
 import main.networking.interfaces.NetworkManagerListener;
 import main.networking.interfaces.NetworkManager;
-import main.optransform.Diff;
+import main.optransform.Operation;
 
 import java.io.File;
 
@@ -116,14 +116,26 @@ public class MainWindowController implements NetworkManagerListener {
         });
     }
 
+    //@Override
+    //public void onDiffPacketReceived(Diff diff) {
+    //    for(Tab tab: tabPane.getTabs()){
+    //        if(tab instanceof EditFileTab){
+    //            EditFileTab editFileTab = (EditFileTab)tab;
+    //            if(editFileTab.getTitle().equals(diff.getSourceId())){
+    //                editFileTab.applyDiff(diff);
+    //            }
+    //        }
+
+    //    }
+    //}
+
     @Override
-    public void onDiffPacketReceived(Diff diff) {
+    public void onOperationRecieved(Operation op) {
         for(Tab tab: tabPane.getTabs()){
             if(tab instanceof EditFileTab){
+                //TODO: Get it to actually route to the correct tab
                 EditFileTab editFileTab = (EditFileTab)tab;
-                if(editFileTab.getTitle().equals(diff.getSourceId())){
-                    editFileTab.applyDiff(diff);
-                }
+                editFileTab.applyOp(op);
             }
 
         }

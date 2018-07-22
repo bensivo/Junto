@@ -1,4 +1,4 @@
-package main.networking;
+package main.networking.core;
 
 import main.networking.interfaces.ConnectionPoolerListener;
 import main.networking.interfaces.DataPacketReceiverListener;

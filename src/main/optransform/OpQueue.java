@@ -4,8 +4,8 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 /**
- * An Operation Queue (or OpQueue for short), is an event queue for holding
- * either incoming or outgoing operations, pre-transformation.
+ * An Operation Queue (or OpQueue for short), is an 'event' queue for holding
+ * incoming operations, pre-transformation.
  */
 public class OpQueue {
     Queue<Operation> queue;
