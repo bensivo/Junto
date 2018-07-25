@@ -1,34 +1,21 @@
 package main.networking.core;
 
-import main.networking.interfaces.ConnectionPoolerListener;
-import main.networking.interfaces.DataPacketReceiverListener;
+import main.networking.interfaces.SocketAcceptor;
 import main.util.Logger;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.ArrayList;
 
 /**
- * Listens for incoming connections on the given port
- * and start new DataPacketReceiver Threads for each connection.
- *
- * Allows the Server to handle multiple clients simultaneously
- *
- * @author Benjamin
+ * Used by the server to connect to multiple clients.
+ * A thread that listens for incoming connections on the port given. Sockets are forwarded to a
+ * SocketAcceptor for further handling, while the ConnectionPooler continues listening for new sockets.
  */
 public class ConnectionPooler implements Runnable{
-
     private int port;
     private ServerSocket server;
-
-    //Handler for  incoming data packets
-    private DataPacketReceiverListener receiverListener = null;
-    //Handler for local ConnectionPooler events
-    private ConnectionPoolerListener poolerListener = null;
-
-    //A list of DataPacketReceivers, each running on its own thread, connected to its own socket
-    private ArrayList<DataPacketReceiver> dataPacketReceivers = new ArrayList<>();
+    private SocketAcceptor socketAcceptor = null;
 
     public ConnectionPooler(int port) {
         this.port = port;
@@ -39,29 +26,25 @@ public class ConnectionPooler implements Runnable{
      */
     public void run(){
         try {
-            Logger.logI("ConnectionPooler", "Using port " + port);
             server = new ServerSocket(port);
             Logger.logI("ConnectionPooler", "Server started");
+            Logger.logI("ConnectionPooler", "Using port " + port);
 
             //This loop continually accepts new clients and starts new threads for them
             while(!Thread.currentThread().isInterrupted()){
                 Logger.logI("ConnectionPooler", "Looking for new client");
                 Socket socket = server.accept();
-                if(poolerListener != null){
-                    poolerListener.onNewSocketConnected(socket);
+                if(socketAcceptor != null){
+                    socketAcceptor.onNewSocketConnected(socket);
                 }
-
             }
-
         }catch(IOException ioe){
             Logger.logE("ConnectionPooler","Server Socket Closed");
         }
-
-
     }
 
     /**
-     * Stop both the listening server socket, and all client connections
+     * Stop both the listening server socket
      *
      * Note: Closing a Socket with this function will often throw a SocketException. This exception is not
      *       fatal to the program, and nothing will be harmed by it.
@@ -71,24 +54,13 @@ public class ConnectionPooler implements Runnable{
             server.close();
             Thread.currentThread().interrupt();
 
-            for(DataPacketReceiver child: dataPacketReceivers){
-                child.instantStop();
-            }
         }catch(IOException ioe){
             ioe.printStackTrace();
         }
     }
 
-    public ArrayList<DataPacketReceiver> getDataPacketReceivers(){
-        return dataPacketReceivers;
-    }
-
-    public void registerListeners(ConnectionPoolerListener poolerListener, DataPacketReceiverListener receiverListener){
-        this.poolerListener = poolerListener;
-        this.receiverListener = receiverListener;
-        for(DataPacketReceiver connection: this.dataPacketReceivers){
-            connection.attach(this.receiverListener);
-        }
+    public void setSocketAcceptor(SocketAcceptor socketAcceptor){
+        this.socketAcceptor = socketAcceptor;
     }
 
     public int getPort() {

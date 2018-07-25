@@ -5,7 +5,7 @@
  * @author Benjamin Sivoravong
  */
 
-package main.util;
+package main.networking.utils;
 
 import java.io.IOException;
 import java.net.InetAddress;

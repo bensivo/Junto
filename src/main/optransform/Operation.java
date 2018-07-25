@@ -11,7 +11,7 @@ import java.io.Serializable;
  * Note: Operations are immutable once created.
  */
 public class Operation implements Serializable {
-    public static enum TYPE {
+    public enum TYPE {
         INSERT,
         DELETE
     }
@@ -32,7 +32,6 @@ public class Operation implements Serializable {
             return true;
         if((obj == null) || (obj.getClass() != this.getClass()))
             return false;
-        // object must be Test at this point
         Operation op = (Operation)obj;
         return this.type == op.type && this.index == op.index && this.data.equals(op.data);
     }
@@ -49,8 +48,8 @@ public class Operation implements Serializable {
     @Override
     public String toString(){
         String res = "{";
-        res += "type:" + (type==TYPE.DELETE ? "Delete" : "Insert") + ",";
-        res += "index:" + String.valueOf(index) + ",";
+        res += "type:" + (type==TYPE.DELETE ? "Delete" : "Insert") + ", ";
+        res += "index:" + String.valueOf(index) + ", ";
         res += "data:" + data;
         res += "}";
         return res;

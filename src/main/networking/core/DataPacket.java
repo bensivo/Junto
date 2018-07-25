@@ -2,17 +2,18 @@ package main.networking.core;
 /**
  * Abstraction for sending data through a socket connection.
  * Usage as follows:
- * - Get Data you wish to send over internet connection
+ * - Get Data you wish to send over internet connection (some Object)
  * - Create a DataPacket object
  * - Call the toBytes() function
  * - Send the bytes over the socket connection
  * - On the other end, call the fromBytes() function to create an identical dataPacket object
  * - Retrieve the data from the packet
  *
- * The byte representation of the packet has a Header (256 bytes) and a body (variable length)
+ * Note: Once created, DataPackets are immutable
  */
 
 import java.io.Serializable;
+import java.util.Map;
 
 public class DataPacket implements Serializable {
     public final static int TYPE_DIFF = 1;
@@ -20,49 +21,18 @@ public class DataPacket implements Serializable {
     public final static int TYPE_AUTH = 3;
     public final static int TYPE_DIR_REQUEST = 4;
 
-    private String filepath;
-    private byte data[];
-    private String source;
-    private String destination;
-    private int type;
+    public final Map<String, Object> meta;
+    public final byte data[];
+    public final int type;
 
-    public DataPacket(String src, String dest, int type, byte[] data, String filepath){
-        this.source = src;
-        this.destination = dest;
+
+    public DataPacket(byte[] data, int type, Map<String, Object> meta){
         this.type = type;
         this.data = data;
-        this.filepath = filepath;
-    }
-
-    public DataPacket(String src, String dest, int type, byte[] data){
-        this(src,dest,type,data,"");
-    }
-
-    public DataPacket(int type, byte[] data){
-        this("","",type, data, "");
+        this.meta = meta;
     }
 
     public DataPacket() {
-        this("","",0, new byte[0]);
+        this(null, 0, null);
     }
-
-    public byte[] getData() { return data; }
-
-    public void setData(byte[] data) { this.data = data; }
-
-    public String getSource() { return source; }
-
-    public void setSource(String source) { this.source = source; }
-
-    public String getDestination() { return destination; }
-
-    public void setDestination(String destination) { this.destination = destination; }
-
-    public int getType() { return type; }
-
-    public void setType(int type) { this.type = type; }
-
-    public String getFilepath() { return filepath; }
-
-    public void setFilepath(String filepath) { this.filepath = filepath; }
 }

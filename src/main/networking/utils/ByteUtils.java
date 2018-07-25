@@ -1,4 +1,4 @@
-package main.util;
+package main.networking.utils;
 
 import java.io.*;
 import java.nio.ByteBuffer;

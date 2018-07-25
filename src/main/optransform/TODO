@@ -2,6 +2,13 @@ TODO:
 
 For now:
 - Implement a DataPacket router.
+    - I'm doing it rn:
+        - Make NetworkManager into a Superclass
+            - broadcast is the same in both
+            - Both will have a dataPacketRouter - From controller: this.juntoConnection.getNetworkManager().getDPRouter().registerListener(EditTab, (dp)->{dp.meta.get('filename').equals("FIIIIIIIILe.txt"));
+                - Question: should we have to option to swap routers?
+                    - If so, make router a separeate opject, that is linked by the controller
+                    - If not, make it a member of Netowrkmanager that is instantiated when you make the manager.
 - Get rid of Operation-specific logic in the Network Manager,
 - Write a superclass for Server and Client. Both have the ability to broadcast and receive packets.
 - Figure out why the program doesn't actually stop on close.

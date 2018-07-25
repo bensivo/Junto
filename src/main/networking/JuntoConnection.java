@@ -1,12 +1,8 @@
 package main.networking;
 
-import main.networking.core.ConnectionPooler;
-import main.networking.interfaces.NetworkManagerListener;
+import main.networking.core.DataPacket;
 import main.networking.interfaces.NetworkManager;
-
-import java.net.Socket;
-import java.util.ArrayList;
-import java.util.Collection;
+import main.networking.utils.ByteUtils;
 
 /**
  * Manages a single connection between 2 Junto applications
@@ -17,49 +13,47 @@ import java.util.Collection;
 public class JuntoConnection {
     private static final int PORT = 5001;
 
-    NetworkManager networkManager = null;
-
-    Collection<Socket> sockets;
-    Collection<Thread> receiverThreads;
-
-    NetworkManagerListener connectionListener = null; //callbacks
-
-    ConnectionPooler pooler = null; //Runnable that listens for new socket connections
-    Thread poolerThread;
+    private NetworkManager networkManager;
+    private DataPacketRouter dataPacketRouter;
 
     public JuntoConnection(){
-        this.connectionListener = null;
-        this.sockets = new ArrayList<>();
-        this.receiverThreads = new ArrayList<>();
+        dataPacketRouter = new DataPacketRouter();
+        dataPacketRouter.registerReceiver(new DataPacketRouter.Receiver() {
+            @Override
+            public boolean shouldReceivePacket(DataPacket dp) {
+                return true;
+            }
+
+            @Override
+            public void receivePacket(DataPacket dp) {
+                try{
+                    System.out.println("New Packet!");
+                    Object obj = ByteUtils.fromBytes(dp.data);
+                    System.out.println(obj.toString());
+                }catch(Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+        });
     }
 
-    public void attach(NetworkManagerListener listener){
-        this.connectionListener = listener;
+    public DataPacketRouter getDataPacketRouter(){
+        return this.dataPacketRouter;
     }
 
-    public void start(){
-        networkManager.start();
+    public NetworkManager getNetworkManager(){
+        return this.networkManager;
     }
-
-
-    public void broadcast(Object obj){
-        networkManager.broadcast(obj);
-    }
-
-    //public void handleLocalDiff(Diff diff){
-    //    networkManager.handleLocalDiff(diff);
-    //}
 
     public void switchNetworkManager(int type){
         switch(type){
             case NetworkManager.TYPE_CLIENT:
-                networkManager = new Client();
+                networkManager = new Client(dataPacketRouter);
                 break;
             case NetworkManager.TYPE_SERVER:
-                networkManager = new Server();
+                networkManager = new Server(dataPacketRouter);
                 break;
         }
-        networkManager.attachListener(this.connectionListener);
     }
-
 }

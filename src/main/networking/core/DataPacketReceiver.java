@@ -1,35 +1,38 @@
 package main.networking.core;
 
-import main.networking.interfaces.DataPacketReceiverListener;
-import main.util.ByteUtils;
+import main.networking.utils.ByteUtils;
+import main.util.Logger;
 
 import java.io.*;
 import java.net.Socket;
 
 /**
- * Given a socket (already opened), begins listening for DataPackets coming through the socket, using
- * The ConnectionLIstenerInterface to notify observers
+ * Used to listen for packets send over a socket.
  *
  * @author Benjamin
  */
 public class DataPacketReceiver implements Runnable{
 
+    public interface Listener{
+        void onDataPacketReceived(DataPacket dp, DataPacketReceiver dpr);
+    }
+
     private Socket socket;
     private DataInputStream inStream;
-    DataPacketReceiverListener listener = null;
+    DataPacketReceiver.Listener listener = null;
 
     public DataPacketReceiver(Socket socket) {
         this.socket = socket;
         this.listener = null;
     }
 
-    public DataPacketReceiver(Socket socket, DataPacketReceiverListener receiverListener){
+    public DataPacketReceiver(Socket socket, DataPacketReceiver.Listener receiverListener){
         this.socket = socket;
         this.listener = receiverListener;
     }
 
 
-    public void attach(DataPacketReceiverListener listener){
+    public void attach(DataPacketReceiver.Listener listener){
         this.listener = listener;
     }
 
@@ -49,9 +52,12 @@ public class DataPacketReceiver implements Runnable{
             open();
 
             String line = "";
+            /**
+             * TODO: Implement better thread termination
+             */
             while (!line.equals(".bye") && !Thread.currentThread().isInterrupted()){
                 try {
-                    System.out.println("New DataPacket");
+                    Logger.logI("DPR", "New Datapacket Received");
                     /**
                      * Read the initial Size Packet that has the length of the actual DataPacket
                      * Size Packets are always Long.Bytes (8) bytes long
