@@ -1,5 +1,6 @@
 package main;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
@@ -10,11 +11,12 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import main.fileio.FileIO;
 import main.gui.EditFileTab;
 import main.gui.TabController;
 import main.networking.*;
 import main.networking.core.DataPacket;
-import main.networking.interfaces.NetworkManager;
+import main.networking.NetworkManager;
 import main.networking.utils.ByteUtils;
 import main.optransform.Operation;
 
@@ -46,7 +48,7 @@ public class MainWindowController {
         // Create networking objects
         connection = new JuntoConnection();
 
-        // New Routing rule. All Operation packets get routed to onOperationReceived()
+        // Create DataPacket Routing rule. All Operations get routed to onOperationReceived()
         connection.getDataPacketRouter().registerReceiver(new DataPacketRouter.Receiver() {
             @Override
             public boolean shouldReceivePacket(DataPacket dp) {
@@ -74,14 +76,24 @@ public class MainWindowController {
      * @param op operation received
      */
     private void onOperationReceived(Operation op) {
-        for(Tab tab: tabPane.getTabs()){
-            if(tab instanceof EditFileTab){
-                //TODO: Get it to actually route to the correct tab
-                EditFileTab editFileTab = (EditFileTab)tab;
-                editFileTab.applyOperation(op);
+        Platform.runLater(()->{
+            // Try to apply the operation to an existing tab
+            for(Tab tab: tabPane.getTabs()){
+                if(tab instanceof EditFileTab){
+                    EditFileTab editFileTab = (EditFileTab)tab;
+
+                    if(editFileTab.getTitle().equals(op.source)){
+                        editFileTab.applyOperation(op);
+                        return;
+                    }
+                }
             }
 
-        }
+            // None of the tabs matched the incoming operation
+            EditFileTab newTab = new EditFileTab(op.source, "", this.connection);
+            tabPane.getTabs().add(newTab);
+            newTab.applyOperation(op);
+        });
     }
 
     /**
@@ -142,7 +154,16 @@ public class MainWindowController {
                         File selectedFile = fileChooser.showOpenDialog(primaryStage);
                         String filepath = selectedFile.getAbsolutePath();
                         String filename = selectedFile.getName();
-                        tabController.newTab(filename);
+                        EditFileTab tab = tabController.newTab(filename);
+                        try{
+                            String contents = new String(FileIO.readFile(filepath));
+                            //tab.applyOperation(new Operation(Operation.TYPE.INSERT, 0, contents));
+                            tab.getTextArea().setText(contents);
+
+                        }catch(IOException ioe){
+                            ioe.printStackTrace();
+                        }
+
                     }
                 }
         );
@@ -150,7 +171,6 @@ public class MainWindowController {
                 (MouseEvent e)->{
                     System.out.println("new button clicked");
                     tabController.newTab();
-                    //tabController.newTab();
                 }
         );
         button_save_as.setOnMouseClicked(

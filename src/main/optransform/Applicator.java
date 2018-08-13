@@ -1,5 +1,7 @@
 package main.optransform;
 
+import main.util.Logger;
+
 import java.util.List;
 
 import static main.optransform.Operation.TYPE.DELETE;
@@ -19,6 +21,7 @@ public class Applicator {
      * @return Resulting string after operation.
      */
     public static String applyOperation(String source, Operation operation){
+        Logger.logI("OPT_APPLY", "Length of source: " + source.length());
         if(operation.type == INSERT){
             StringBuilder builder = new StringBuilder(source);
             builder.insert(operation.index, operation.data);

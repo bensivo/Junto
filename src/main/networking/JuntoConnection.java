@@ -1,7 +1,6 @@
 package main.networking;
 
 import main.networking.core.DataPacket;
-import main.networking.interfaces.NetworkManager;
 import main.networking.utils.ByteUtils;
 
 /**
@@ -33,7 +32,6 @@ public class JuntoConnection {
                 }catch(Exception e){
                     e.printStackTrace();
                 }
-
             }
         });
     }

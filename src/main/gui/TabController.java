@@ -6,8 +6,8 @@ import javafx.scene.control.TabPane;
 import main.networking.JuntoConnection;
 
 public class TabController {
-    TabPane tabPane;
-    JuntoConnection juntoConnection = null;
+    private TabPane tabPane;
+    private JuntoConnection juntoConnection;
 
     public TabController(TabPane tabPane, JuntoConnection juntoConnection) {
         this.tabPane = tabPane;
@@ -17,9 +17,19 @@ public class TabController {
     /**
      * Create a new tab with the given title
      */
-    public void newTab(String name){
+    public EditFileTab newTab(String name){
+        return this.newTab(name, "");
+    }
+
+    /**
+     * Create a new tab with the given title AND filepath
+     */
+    public EditFileTab newTab(String name, String filepath){
         ObservableList<Tab> tabs = this.tabPane.getTabs();
-        tabs.add(new EditFileTab(name, null, juntoConnection));
+        EditFileTab newTab = new EditFileTab(name, filepath, juntoConnection);
+        tabs.add(newTab);
+
+        return newTab;
     }
 
     /**

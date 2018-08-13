@@ -1,8 +1,8 @@
-package main.networking.interfaces;
+package main.networking;
 
-import main.networking.DataPacketRouter;
 import main.networking.core.DataPacket;
 import main.networking.core.DataPacketReceiver;
+import main.networking.interfaces.SocketAcceptor;
 import main.networking.utils.ByteUtils;
 
 import java.io.BufferedOutputStream;
@@ -58,7 +58,6 @@ public abstract class NetworkManager implements SocketAcceptor, DataPacketReceiv
         }catch (IOException ioe){
             ioe.printStackTrace();
         }
-
     }
 
     /**

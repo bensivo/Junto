@@ -1,0 +1,12 @@
+Sequence for opening a new file:
+    - Opening a file in one window will cause the other window to open it as well.
+        - Both windows will force users to have the same tabs open at all times, for now.
+
+1. Open file, read contents into tab
+2. Take contents, put into datapacket
+3. broadcast datapacket with type FILE_CONTENTS
+    - the filename will be in metadata
+
+4. Add routing rule for FILE_CONTENTS
+    - if file already open, get tab and overrite all contents
+    - if file not open, new tab with that name, and all the contents.

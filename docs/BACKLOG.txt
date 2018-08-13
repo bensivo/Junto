@@ -1,7 +1,12 @@
-BACKLOG
+BACKLOG:
 
-BIG FEATURES:
-    - "As a technical user, I want to run a UI-free server that handles OT for multiple clients."
-        - Functional Requirements:
-            - UI code and OT code must be sufficiently decoupled
-            - UI code and Netowkring code must be sufficiently decoupled
+Features to implement next:
+
+1. Open a file from the system. Show it locally.
+
+2. Send the entire file over a connection (as a single DataPacket)
+    - Later: consider sending it as multiple packets
+
+3. Open multiple files (open on both sides of the connection), and edit between the two seamlessly.
+
+4. Open multiple files (but don't force them to be open), and edit between the two seamlessly.

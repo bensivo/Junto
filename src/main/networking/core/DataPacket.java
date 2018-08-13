@@ -16,10 +16,8 @@ import java.io.Serializable;
 import java.util.Map;
 
 public class DataPacket implements Serializable {
-    public final static int TYPE_DIFF = 1;
     public final static int TYPE_OP = 2;
     public final static int TYPE_AUTH = 3;
-    public final static int TYPE_DIR_REQUEST = 4;
 
     public final Map<String, Object> meta;
     public final byte data[];

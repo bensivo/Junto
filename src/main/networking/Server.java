@@ -3,7 +3,6 @@ package main.networking;
 import main.networking.core.ConnectionPooler;
 import main.networking.core.DataPacketReceiver;
 import main.networking.interfaces.SocketAcceptor;
-import main.networking.interfaces.NetworkManager;
 import main.util.Logger;
 
 import java.io.DataOutputStream;

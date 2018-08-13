@@ -21,11 +21,12 @@ import static main.networking.core.DataPacket.TYPE_OP;
  * Custom Tab that contains a TextArea, and is linked to a specific file.
  */
 public class EditFileTab extends Tab implements OpTContainer, DataPacketRouter.Receiver{
-    TextArea textArea = null;
-    String filepath = "", title = "";
-    JuntoConnection juntoConnection = null;
+    private TextArea textArea = null;
+    private String filepath = "";
+    private String title = "";
+    private JuntoConnection juntoConnection = null;
 
-    boolean detectChange = true;
+    private boolean detectChange = true;
 
     public EditFileTab(String title){
         this(title, "", null);
@@ -50,9 +51,12 @@ public class EditFileTab extends Tab implements OpTContainer, DataPacketRouter.R
                     List<Operation> operations = OpParser.getOperations(oldValue, newValue);
                     for(Operation op: operations){
                         Logger.logI("EDIT_FILE_TAB", "Change in tab: " + op.toString());
+                        op.source = this.title;
 
-                        if(juntoConnection!=null){
-                            juntoConnection.getNetworkManager().broadcast(op);
+                        if(juntoConnection != null){
+                            if(juntoConnection.getNetworkManager() != null){
+                                juntoConnection.getNetworkManager().broadcast(op);
+                            }
                         }
                     }
                 }
